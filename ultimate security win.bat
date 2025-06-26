@@ -1,0 +1,150 @@
+@echo off
+title Ultimate System Manager v2.0
+color 0a
+mode con: cols=80 lines=30
+
+:menu
+cls
+echo.
+echo  ====================================================
+echo   ULTIMATE SYSTEM MANAGER v2.0 Alireza,s version
+echo  ====================================================
+echo.
+echo  1. Managing Windows Services
+echo  2. Smart system cleanup
+echo  3. Network optimization
+echo  4. System resource monitor
+echo  5. Security tools
+echo  6. exit
+echo.
+set /p choice="Please enter the desired number.: "
+
+if "%choice%"=="1" goto services
+if "%choice%"=="2" goto cleanup
+if "%choice%"=="3" goto network
+if "%choice%"=="4" goto monitor
+if "%choice%"=="5" goto security
+if "%choice%"=="6" exit
+
+:services
+cls
+echo.
+echo  ===== Managing Windows Services =====
+echo.
+echo  1. Show running services
+echo  2. Stop the service
+echo  3. Start the service
+echo  4. Return to main menu
+echo.
+set /p service_choice="choose: "
+
+if "%service_choice%"=="1" (
+    sc query | find "SERVICE_NAME"
+    pause
+    goto services
+)
+if "%service_choice%"=="2" (
+    set /p service_name="Enter the service name.: "
+    sc stop "%service_name%"
+    pause
+    goto services
+)
+if "%service_choice%"=="3" (
+    set /p service_name="enter service name: "
+    sc start "%service_name%"
+    pause
+    goto services
+)
+if "%service_choice%"=="4" goto menu
+
+:cleanup
+cls
+echo.
+echo  =====Smart system cleanup=====
+echo.
+echo  Clearing temporary files...
+del /q /f /s %temp%\*.*
+echo  Clear DNS cache...
+ipconfig /flushdns
+echo  Clearing default browser files...
+del /q /f /s "%LOCALAPPDATA%\Google\Chrome\User Data\Default\Cache\*.*"
+del /q /f /s "%LOCALAPPDATA%\Microsoft\Edge\User Data\Default\Cache\*.*"
+echo  Cleanup completed!
+pause
+goto menu
+
+:network
+cls
+echo.
+echo  ===== Network optimization =====
+echo.
+echo  1. Show network connections
+echo  2. Reset the TCP/IP stack
+echo  3. Internet speed test
+echo  4. Return to main menu
+echo.
+set /p network_choice="choose: "
+
+if "%network_choice%"=="1" (
+    netstat -ano | find "ESTABLISHED"
+    pause
+    goto network
+)
+if "%network_choice%"=="2" (
+    netsh int ip reset
+    netsh winsock reset
+    echo  Select Network stack reset.!
+    pause
+    goto network
+)
+if "%network_choice%"=="3" (
+    echo  Testing internet speed...
+    powershell -command "Invoke-WebRequest -Uri 'https://www.google.com'"
+    pause
+    goto network
+)
+if "%network_choice%"=="4" goto menu
+
+:monitor
+cls
+echo.
+echo  ===== System resource monitor =====
+echo.
+tasklist
+echo.
+wmic cpu get loadpercentage
+wmic OS get FreePhysicalMemory,TotalVisibleMemorySize /Value
+pause
+goto menu
+
+:security
+cls
+echo.
+echo  ===== Security tools =====
+echo.
+echo  1.Disable USB
+echo  2. Enable USB
+echo  3. Checking suspicious files
+echo  4. Return to main menu
+echo.
+set /p security_choice="choose: "
+
+if "%security_choice%"=="1" (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Services\USBSTOR" /v "Start" /t REG_DWORD /d "4" /f
+    echo  drives USB options are disabled
+    pause
+    goto security
+)
+if "%security_choice%"=="2" (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Services\USBSTOR" /v "Start" /t REG_DWORD /d "3" /f
+    echo  USB drives enabled
+    pause
+    goto security
+)
+if "%security_choice%"=="3" (
+    echo Scanning system executable files...
+    dir /s /b C:\*.exe | findstr /i "virus malware"
+    pause
+    goto security
+)
+if "%security_choice%"=="4" goto menu
